@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  supervisor
+  employee
+  admin
+}
+
+model departments {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  createdAt DateTime    @default(now())
+  employees employees[]
+}
+
+model employees {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  name         String
+  lastname     String
+  title        String
+  departmentId Int
+  department   departments   @relation(fields: [departmentId], references: [id])
+  createdAt    DateTime      @default(now())
+  role         Role
+  supervisorEvaluations evaluations[] @relation("supervisor")
+  employeeEvaluations evaluations[] @relation("employee")
+}
+
+
+model evaluations {
+  id           Int       @id @default(autoincrement())
+  supervisorId Int 
+  employeeId Int 
+  supervisor   employees @relation("supervisor",fields: [supervisorId], references: [id])
+  employee   employees @relation("employee",fields: [employeeId], references: [id])
+
+  knowledgeSkillsAndAbilities String
+  communication String
+  ownsership String
+  performance String
+  departmentSpecificGoals String
+  professionalValues String
+  leadershipSummary String
+
+
+  feedbackKnowledgeSkillsAndAbilities String
+  feedbackCommunication String
+  feedbackOwnsership String
+  feedbackPerformance String
+  feedbackDepartmentSpecificGoals String
+  feedbackProfessionalism String
+
+  smartGoal String
+  leadersCommentForDevelopment String
+
+  employeesComments String
+  leaderDate DateTime @default(now())
+  employeeDate DateTime @default(now())
+  
+}
